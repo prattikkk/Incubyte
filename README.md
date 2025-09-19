@@ -122,19 +122,12 @@ $env:JWT_SECRET='your-strong-secret'
 Add your screenshots into the `docs/` folder so they render on GitHub. I’ve added convenient placeholders below; place the images with these names (or adjust the paths in README as you like).
 
 ### Gallery
-- Admin Dashboard
 
-![Admin Dashboard](docs/screenshot-1.png)
-
-- Sweets Catalog
-
-![Sweets Catalog](docs/screenshot-2.png)
-
-- Purchase / Inventory View
+- Login
 
 ![Purchase / Inventory](docs/screenshot-3.png)
 
-- Home / Landing
+- Register
 
 ![Home / Landing](docs/screenshot-4.png)
 
