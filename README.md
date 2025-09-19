@@ -1,9 +1,9 @@
 # Sweet Shop
 
-A secure Spring Boot backend for managing sweets with JWT-based auth, migrations via Flyway, and simple static demo pages to exercise the API. Includes comprehensive tests with coverage gates and an end-to-end PowerShell smoke script.
+A secure Spring Boot backend for managing sweets with JWT-based auth, migrations via Flyway, and a modern React (Vite + TypeScript) frontend. Includes comprehensive tests with coverage gates and an end-to-end PowerShell smoke script.
 
 ## Repository
-Public repo: TODO (publish this workspace and paste the link here)
+Public repo: https://github.com/prattikkk/Incubyte
 
 How to publish this project to GitHub (once per repo):
 
@@ -23,7 +23,9 @@ git push -u origin main
 - Flyway migrations and H2 (dev/test) + MySQL (prod)
 - Global error handling with structured responses
 - Tests (JUnit 5 + Spring Boot Test) and JaCoCo coverage gates
-- Static demo UI (no framework) served from Spring Boot
+- UI options:
+  - React app (Vite + TS) in `frontend/` with modern styling, toasts, and responsive layout
+  - Lightweight static demo pages served by Spring Boot under `src/main/resources/static` (optional)
 - E2E smoke script (`scripts/e2e-smoke.ps1`)
 
 ## Prerequisites
@@ -45,13 +47,23 @@ Dev admin (seeded):
 - username: `admin`
 - password: `admin123`
 
-Open demo pages:
+Open static demo pages (optional):
 - http://localhost:8080/
 - http://localhost:8080/sweets.html
 - http://localhost:8080/admin.html
 - http://localhost:8080/register.html
 
-Frontend note: This repository ships minimal static demo pages only; there is no separate React/Vite app in this repo. Use the pages above to interact with the API.
+Or run the React app during development (recommended):
+
+```powershell
+# In a new terminal
+cd .\frontend
+npm ci
+npm run dev
+# Open http://localhost:5173
+```
+
+The React dev server proxies API calls to the backend via Vite’s proxy (configured for `/api` → `http://localhost:8080`).
 
 ## API highlights
 - POST `/api/auth/register` – create user (password must include upper, lower, digit)
@@ -107,20 +119,58 @@ $env:JWT_SECRET='your-strong-secret'
 ```
 
 ## Screenshots
-Add screenshots to the `docs/` folder and they will be referenced here:
-- docs/home.png – static home
-- docs/sweets.png – search and purchase
-- docs/admin.png – admin actions
-- docs/register.png – registration
+Add your screenshots into the `docs/` folder so they render on GitHub. I’ve added convenient placeholders below; place the images with these names (or adjust the paths in README as you like).
 
-Example embeds (add files to docs/ then uncomment):
+### Gallery
+- Admin Dashboard
 
-<!--
-![Home](docs/home.png)
-![Sweets](docs/sweets.png)
-![Admin](docs/admin.png)
-![Register](docs/register.png)
--->
+![Admin Dashboard](docs/screenshot-1.png)
+
+- Sweets Catalog
+
+![Sweets Catalog](docs/screenshot-2.png)
+
+- Purchase / Inventory View
+
+![Purchase / Inventory](docs/screenshot-3.png)
+
+- Home / Landing
+
+![Home / Landing](docs/screenshot-4.png)
+
+- Login
+
+![Login](docs/screenshot-5.png)
+
+- Register
+
+![Register](docs/screenshot-6.png)
+
+- Extra (any additional UI/state)
+
+![Extra](docs/screenshot-7.png)
+
+### Quick import from your machine (Windows PowerShell)
+Copy your existing screenshots into `docs/` with the expected names:
+
+```powershell
+New-Item -ItemType Directory -Force .\docs | Out-Null
+Copy-Item "c:\Users\prati\OneDrive\Pictures\Screenshots\Screenshot 2025-09-19 220303.png" .\docs\screenshot-1.png
+Copy-Item "c:\Users\prati\OneDrive\Pictures\Screenshots\Screenshot 2025-09-19 220222.png" .\docs\screenshot-2.png
+Copy-Item "c:\Users\prati\OneDrive\Pictures\Screenshots\Screenshot 2025-09-19 220209.png" .\docs\screenshot-3.png
+Copy-Item "c:\Users\prati\OneDrive\Pictures\Screenshots\Screenshot 2025-09-19 220118.png" .\docs\screenshot-4.png
+Copy-Item "c:\Users\prati\OneDrive\Pictures\Screenshots\Screenshot 2025-09-19 213004.png" .\docs\screenshot-5.png
+Copy-Item "c:\Users\prati\OneDrive\Pictures\Screenshots\Screenshot 2025-09-19 212951.png" .\docs\screenshot-6.png
+Copy-Item "c:\Users\prati\OneDrive\Pictures\Screenshots\Screenshot 2025-09-19 212925.png" .\docs\screenshot-7.png
+```
+
+Commit and push:
+
+```powershell
+git add docs/*.png README.md
+git commit -m "docs: add UI screenshots to README"
+git push
+```
 
 ## My AI Usage
 - I used an AI pair programmer to:
@@ -132,6 +182,18 @@ Example embeds (add files to docs/ then uncomment):
 - All generated code was reviewed, adjusted to match requirements, and validated by running unit/integration tests, coverage checks, and smoke tests.
 
 ## Troubleshooting
+
+### React app build and preview
+Build the React app and run a local static preview server:
+
+```powershell
+cd .\frontend
+npm run build
+npm run preview
+# Open the printed URL (default http://localhost:4173)
+```
+
+If you want Spring Boot to serve the built React app, copy the contents of `frontend/dist/` into `src/main/resources/static/` (or configure your preferred asset pipeline). In dev, using Vite (`npm run dev`) is preferred.
 - WeakKeyException: provide a secret >= 32 bytes via `APP_SECURITY_JWT_SECRET` (dev) or `JWT_SECRET` (prod).
 - 401 on protected endpoints: include `Authorization: Bearer <token>` from `/api/auth/login`.
 - Duplicate user registration: returns 400 with `illegal_argument`; use a new username/email or adjust data.
@@ -379,16 +441,6 @@ Add screenshots of:
 - Login and Register pages
 - Sweets list with purchase button disabled at quantity 0
 - Admin dashboard (create, update, restock, delete)
-
-## Roadmap / Next Steps
-- Frontend implementation
-- CI workflow YAML
-- Production properties template file
-- OpenAPI/Swagger documentation (springdoc-openapi)
-- Dockerfile & Docker Compose (app + MySQL)
-- Pagination & sorting for sweets listing
-- Rate limiting / basic metrics (Micrometer + Prometheus)
-- Refresh tokens / token revocation strategy (optional)
 
 ## Contributing Guidelines (Brief)
 1. Create feature branch
