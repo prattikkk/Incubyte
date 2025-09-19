@@ -41,6 +41,8 @@ public class SecurityConfig {
     http.csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/", "/index.html", "/styles.css", "/sweets.html", "/admin.html", "/register.html", "/login.html", "/favicon.ico").permitAll()
+            .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
             .requestMatchers("/api/auth/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/sweets", "/api/sweets/search").permitAll()
             .anyRequest().authenticated())

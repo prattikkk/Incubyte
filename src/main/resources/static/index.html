@@ -9,7 +9,10 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Sweet Shop – Static Demo Pages</h1>
+      <div class="brand">
+        <div class="logo"></div>
+        <h1>Sweet Shop</h1>
+      </div>
       <nav class="nav">
         <a href="/sweets.html">Sweets</a>
         <a href="/admin.html">Admin</a>
@@ -17,30 +20,37 @@
       </nav>
     </div>
 
-    <div class="panel hero">
-      <p>These pages are simple, framework-free helpers to try the API. Use them for quick manual testing or demos.</p>
-    </div>
+    <section class="hero">
+      <h2>Delightful sweets, secure APIs</h2>
+      <p>Explore the catalog, purchase your favorites, or manage inventory with role-based access. These static pages make it easy to demo the backend features.</p>
+      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap">
+        <a class="btn" href="/sweets.html">Browse Sweets</a>
+        <a class="btn outline" href="/admin.html">Open Admin</a>
+        <a class="btn ghost" href="/register.html">Create Account</a>
+      </div>
+    </section>
 
-    <div class="grid cols-3">
+    <div class="grid auto" style="margin-top:18px">
       <div class="card">
         <h3>Sweets search & purchase</h3>
-        <p class="small muted">Lookup, filter, and buy sweets. Paste a JWT to purchase.</p>
-        <p><a href="/sweets.html">Open sweets.html →</a></p>
+        <span class="muted">Lookup, filter, and buy sweets. Sign in to purchase.</span>
+        <p style="margin:10px 0 0"><a class="btn secondary" href="/sweets.html">Open sweets.html →</a></p>
       </div>
       <div class="card">
         <h3>Admin dashboard</h3>
-        <p class="small muted">Update, restock, and delete sweets. Requires ROLE_ADMIN JWT.</p>
-        <p><a href="/admin.html">Open admin.html →</a></p>
+        <span class="muted">Update, restock, and delete sweets. Requires ROLE_ADMIN.</span>
+        <p style="margin:10px 0 0"><a class="btn secondary" href="/admin.html">Open admin.html →</a></p>
       </div>
       <div class="card">
         <h3>Register user</h3>
-        <p class="small muted">Create a new account via the API.</p>
-        <p><a href="/register.html">Open register.html →</a></p>
+        <span class="muted">Create a new account through the API.</span>
+        <p style="margin:10px 0 0"><a class="btn secondary" href="/register.html">Open register.html →</a></p>
       </div>
     </div>
 
     <div class="footer">
-      <small class="muted">For full functionality, use the React app in the frontend folder if present.</small>
+      <small class="muted">Use these pages for quick manual testing or demos.</small>
+      <small class="muted">Status: <kbd>dev</kbd></small>
     </div>
   </div>
 </body>

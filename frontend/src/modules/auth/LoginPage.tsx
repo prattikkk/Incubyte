@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../state/AuthContext';
+import { Card } from '../ui/Card';
+import { Input } from '../ui/Input';
+import { Button } from '../ui/Button';
+import { useToast } from '../../state/ToastContext';
 
 export const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const nav = useNavigate();
+  const { notify } = useToast();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +21,8 @@ export const LoginPage: React.FC = () => {
     setLoading(true);
     try {
       await login(username, password);
-      nav('/');
+  notify('Welcome back!', 'success');
+  nav('/');
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Login failed');
     } finally {
@@ -25,21 +31,17 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: '2rem auto', fontFamily: 'sans-serif' }}>
-      <h2>Login</h2>
-      <form onSubmit={submit}>
-        <label>Username<br />
-          <input value={username} onChange={e => setUsername(e.target.value)} required />
-        </label>
-        <br /><br />
-        <label>Password<br />
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-        </label>
-        <br /><br />
-        <button disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
-      </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <p style={{ marginTop: '1rem' }}>New here? <Link to="/register">Create an account</Link></p>
+    <div className="container" style={{ maxWidth: 520 }}>
+      <Card padded>
+        <h2>Login</h2>
+        <form onSubmit={submit} className="grid" style={{ gap: '0.75rem' }}>
+          <Input label="Username" value={username} onChange={e => setUsername(e.target.value)} required />
+          <Input label="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+          <Button disabled={loading}>{loading ? 'Logging in…' : 'Login'}</Button>
+        </form>
+        {error && <div className="card padded" style={{ marginTop: '0.75rem', borderColor: 'rgba(239,68,68,0.5)' }}>{error}</div>}
+        <p style={{ marginTop: '1rem' }}>New here? <Link to="/register">Create an account</Link></p>
+      </Card>
     </div>
   );
 };

@@ -1,6 +1,9 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '../state/AuthContext';
+import '../styles.css';
+import { Layout } from './Layout';
+import { ToastProvider } from '../state/ToastContext';
 import { LoginPage } from './auth/LoginPage';
 import { RegisterPage } from './auth/RegisterPage';
 import { SweetsPage } from './sweets/SweetsPage';
@@ -15,11 +18,15 @@ const Protected: React.FC<{ admin?: boolean; children: React.ReactNode }> = ({ a
 
 export const App: React.FC = () => (
   <AuthProvider>
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/" element={<SweetsPage />} />
-      <Route path="/admin" element={<Protected admin><AdminPage /></Protected>} />
-    </Routes>
+    <ToastProvider>
+      <Layout>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/" element={<SweetsPage />} />
+          <Route path="/admin" element={<Protected admin><AdminPage /></Protected>} />
+        </Routes>
+      </Layout>
+    </ToastProvider>
   </AuthProvider>
 );
