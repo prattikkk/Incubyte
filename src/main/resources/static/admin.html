@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Sweet Shop</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Admin Dashboard</h1>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/sweets.html">Sweets</a>
+        <a href="/register.html">Register</a>
+      </nav>
+    </div>
+
+    <div class="panel">
+      <label>JWT Token<input id="jwt" placeholder="Bearer token" /></label>
+      <small class="muted">Provide a valid JWT with ROLE_ADMIN to perform actions.</small>
+    </div>
+
+    <div class="grid cols-3" style="margin-top:12px;align-items:start">
+      <div class="panel">
+        <h3>Update Sweet</h3>
+        <form id="updateForm" class="grid">
+          <label>Sweet ID<input name="id" type="number" required min="1"/></label>
+          <div class="grid cols-2">
+            <label>Name<input name="name" required maxlength="100"/></label>
+            <label>Category<input name="category" required maxlength="50"/></label>
+          </div>
+          <div class="grid cols-2">
+            <label>Price<input name="price" type="number" step="0.01" min="0" required/></label>
+            <label>Quantity<input name="quantity" type="number" min="0" required/></label>
+          </div>
+          <button type="submit">Update</button>
+        </form>
+        <div class="msg" id="updateMsg"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Restock</h3>
+        <form id="restockForm" class="grid">
+          <label>Sweet ID<input name="id" type="number" required min="1"/></label>
+          <label>Quantity<input name="quantity" type="number" required min="1"/></label>
+          <button type="submit">Restock</button>
+        </form>
+        <div class="msg" id="restockMsg"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Delete</h3>
+        <form id="deleteForm" class="grid">
+          <label>Sweet ID<input name="id" type="number" required min="1"/></label>
+          <button class="secondary" type="submit">Delete</button>
+        </form>
+        <div class="msg" id="deleteMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function authHeader() {
+      const token = document.getElementById('jwt').value.trim();
+      return token ? { 'Authorization': 'Bearer ' + token } : {};
+    }
+
+    function setMsg(el, text, ok) {
+      el.textContent = text; el.className = 'msg ' + (ok ? 'success' : 'error');
+    }
+
+    document.getElementById('updateForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('updateMsg');
+      msg.textContent = '';
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      const id = data.id; delete data.id;
+      try {
+        const res = await fetch(`/api/sweets/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', ...authHeader() },
+          body: JSON.stringify({
+            name: data.name,
+            category: data.category,
+            price: parseFloat(data.price),
+            quantity: parseInt(data.quantity, 10)
+          })
+        });
+        if (!res.ok) throw new Error((await res.json().catch(()=>({}))).message || 'Update failed');
+        const json = await res.json();
+        setMsg(msg, `Updated #${json.id} (${json.name})`, true);
+      } catch (err) { setMsg(msg, err.message, false); }
+    });
+
+    document.getElementById('restockForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('restockMsg');
+      msg.textContent = '';
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      try {
+        const res = await fetch(`/api/sweets/${data.id}/restock?quantity=${encodeURIComponent(data.quantity)}`, {
+          method: 'POST', headers: authHeader()
+        });
+        if (!res.ok) throw new Error((await res.json().catch(()=>({}))).message || 'Restock failed');
+        const json = await res.json();
+        setMsg(msg, `Restocked #${json.id} to qty ${json.quantity}`, true);
+      } catch (err) { setMsg(msg, err.message, false); }
+    });
+
+    document.getElementById('deleteForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('deleteMsg');
+      msg.textContent = '';
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      try {
+        const res = await fetch(`/api/sweets/${data.id}`, { method: 'DELETE', headers: authHeader() });
+        if (!res.ok && res.status !== 204) throw new Error('Delete failed');
+        setMsg(msg, `Deleted #${data.id}`, true);
+      } catch (err) { setMsg(msg, err.message, false); }
+    });
+  </script>
+</body>
+</html>

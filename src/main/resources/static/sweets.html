@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sweets - Sweet Shop</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Sweets</h1>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/admin.html">Admin</a>
+        <a href="/register.html">Register</a>
+      </nav>
+    </div>
+
+    <div class="panel grid cols-2" style="align-items:end">
+      <label>JWT Token<input id="jwt" placeholder="Bearer token" /></label>
+      <label>Quantity to buy<input id="qty" type="number" min="1" value="1"></label>
+    </div>
+
+    <div class="panel" style="margin-top:12px">
+      <form id="searchForm" class="grid cols-6" style="align-items:end;grid-template-columns:repeat(6,1fr) auto">
+        <label>Name<input name="name" placeholder="e.g., Ladoo"/></label>
+        <label>Category<input name="category" placeholder="e.g., Traditional"/></label>
+        <label>Min Price<input name="minPrice" type="number" step="0.01" min="0"/></label>
+        <label>Max Price<input name="maxPrice" type="number" step="0.01" min="0"/></label>
+        <label>Page<input name="page" type="number" min="0" value="0"/></label>
+        <button type="submit">Search</button>
+      </form>
+      <div class="msg" id="searchMsg"></div>
+    </div>
+
+    <div class="panel" style="margin-top:12px">
+      <table id="results" class="table">
+        <thead>
+          <tr><th>ID</th><th>Name</th><th>Category</th><th class="right">Price</th><th class="right">Qty</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function authHeader() {
+      const token = document.getElementById('jwt').value.trim();
+      return token ? { 'Authorization': 'Bearer ' + token } : {};
+    }
+
+    function setMsg(el, text, ok) {
+      el.textContent = text; el.className = 'msg ' + (ok ? 'success' : 'error');
+    }
+
+    function money(n) { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(n); }
+
+    async function search(params) {
+      const msg = document.getElementById('searchMsg');
+      msg.textContent = '';
+      const qs = new URLSearchParams();
+      Object.entries(params).forEach(([k,v]) => { if (v !== '' && v != null) qs.set(k, v); });
+      try {
+        const res = await fetch('/api/sweets?' + qs.toString());
+        if (!res.ok) throw new Error('Search failed');
+        const json = await res.json();
+        const tbody = document.querySelector('#results tbody');
+        tbody.innerHTML = '';
+        json.content.forEach(s => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${s.id}</td><td>${s.name}</td><td>${s.category}</td><td class="right">${money(s.price)}</td><td class="right">${s.quantity}</td><td><button data-id="${s.id}">Buy</button></td>`;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        setMsg(msg, err.message, false);
+      }
+    }
+
+    document.getElementById('searchForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      search(data);
+    });
+
+    document.querySelector('#results tbody').addEventListener('click', async (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const id = btn.getAttribute('data-id');
+      const qty = parseInt(document.getElementById('qty').value || '1', 10);
+      const msg = document.getElementById('searchMsg');
+      try {
+        const res = await fetch(`/api/sweets/${id}/purchase?quantity=${encodeURIComponent(qty)}`, { method: 'POST', headers: authHeader() });
+        if (!res.ok) throw new Error((await res.json().catch(()=>({}))).message || 'Purchase failed');
+        const json = await res.json();
+        setMsg(msg, `Purchased ${qty}x ${json.name}. Remaining: ${json.quantity}`, true);
+      } catch (err) {
+        setMsg(msg, err.message, false);
+      }
+    });
+
+    // Initial load
+    search({});
+  </script>
+</body>
+</html>
