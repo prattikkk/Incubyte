@@ -144,15 +144,7 @@ The previous screenshots were replaced. The gallery below uses the four new imag
 
 ![Register](docs/screenshots/screenshot-4.png)
 
-If you ever need to re-copy them from your machine:
 
-```powershell
-New-Item -ItemType Directory -Force .\docs\screenshots | Out-Null
-Copy-Item "c:\Users\prati\OneDrive\Pictures\Screenshots\Screenshot 2025-09-19 220303.png" .\docs\screenshots\screenshot-1.png -Force
-Copy-Item "c:\Users\prati\OneDrive\Pictures\Screenshots\Screenshot 2025-09-19 220222.png" .\docs\screenshots\screenshot-2.png -Force
-Copy-Item "c:\Users\prati\OneDrive\Pictures\Screenshots\Screenshot 2025-09-19 220209.png" .\docs\screenshots\screenshot-3.png -Force
-Copy-Item "c:\Users\prati\OneDrive\Pictures\Screenshots\Screenshot 2025-09-19 220118.png" .\docs\screenshots\screenshot-4.png -Force
-```
 
 ## Troubleshooting
 - WeakKeyException: ensure a secret >= 32 bytes (`APP_SECURITY_JWT_SECRET` or `JWT_SECRET`).
